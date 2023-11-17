@@ -22,6 +22,26 @@ const dataAccess = {
     return db("specializations").where("node_name", nodename).first();
   },
 
+  async findAllInBranchById(nodeId) {
+    return db
+      .withRecursive("subtree", (qb) => {
+        qb.select("*")
+          .from("specializations")
+          .where("id", nodeId)
+          .unionAll((qb) =>
+            qb
+              .select("specializations.*")
+              .from("specializations")
+              .join(
+                "subtree",
+                db.raw("subtree.id = specializations.parent_id"),
+              ),
+          );
+      })
+      .select("*")
+      .from("subtree");
+  },
+
   async addNode(nodeName, description, parentId) {
     await db("specializations").insert({
       node_name: nodeName,

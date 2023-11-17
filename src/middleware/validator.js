@@ -19,7 +19,6 @@ const validator = {
     body: {
       nodeName: joi.string().required(),
       description: joi.string().required(),
-      parentId: joi.number().integer(),
     },
   }),
 };

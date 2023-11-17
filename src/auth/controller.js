@@ -27,8 +27,9 @@ const authController = {
     const refreshToken = ctx.cookies.get(config.cookie.name);
 
     if (!refreshToken) {
-      ctx.status = 401;
-      throw new Error("Refresh token is missing");
+      const error = new Error("Refresh token is missing");
+      error.status = 401;
+      throw error;
     }
 
     const refreshAccessTokenData =
@@ -49,8 +50,9 @@ const authController = {
         accessToken: refreshAccessTokenData.newAccessToken,
       };
     } else {
-      ctx.status = 401;
-      throw new Error("Invalid or expired refresh token");
+      const error = new Error("Invalid or expired refresh token");
+      error.status = 401;
+      throw error;
     }
   },
 
@@ -58,8 +60,9 @@ const authController = {
     const refreshToken = ctx.cookies.get(config.cookie.name);
 
     if (!refreshToken) {
-      ctx.status = 401;
-      throw new Error("Refresh token is missing");
+      const error = new Error("Refresh token is missing");
+      error.status = 401;
+      throw error;
     }
 
     const success = await authService.userLogout(refreshToken);
@@ -68,7 +71,6 @@ const authController = {
       ctx.status = 200;
       ctx.body = { message: "You are logged out" };
     } else {
-      ctx.status = 500;
       throw new Error("Internal server error.");
     }
   },

@@ -1,7 +1,6 @@
 const specializationDataAccess = require("../data_access/specialization.js");
 const existingItem = require("./existing_node.js");
 const db = require("../../db/database.js");
-const branchBuilder = require("./branch_builder.js");
 
 const specializationService = {
   async getNodeList(page, pageSize) {
@@ -19,22 +18,9 @@ const specializationService = {
   },
 
   async getNodeTree(nodeId) {
-    if (nodeId) {
-      const node = await existingItem.existingNode(nodeId);
-      return await branchBuilder(node);
-    } else {
-      const rootNodes =
-        await specializationDataAccess.findNodesByParentId(null);
+    await existingItem.existingNode(nodeId);
 
-      const wholeTreeData = [];
-
-      for (const node of rootNodes) {
-        const currentRootNode = await branchBuilder(node);
-        wholeTreeData.push(currentRootNode);
-      }
-
-      return wholeTreeData;
-    }
+    return await specializationDataAccess.findAllInBranchById(nodeId);
   },
 
   async createNode(nodeName, description, parentId) {

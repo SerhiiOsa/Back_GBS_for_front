@@ -3,7 +3,7 @@ const router = new Router();
 const authController = require("./controller");
 const validator = require("../middleware/validator.js");
 
-router.post("/login", validator.loginValidator, authController.login);
+router.post("/login", authController.login);
 
 router.post(
   "/refresh",

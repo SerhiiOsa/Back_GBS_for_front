@@ -50,7 +50,7 @@ const specializationController = {
   },
 
   async getNodeTree(ctx) {
-    const nodeId = ctx.query.parent_id || null;
+    const nodeId = ctx.query.parent_id;
     const nodeTreeData = await specializationService.getNodeTree(nodeId);
 
     await sendData(nodeTreeData, ctx);
