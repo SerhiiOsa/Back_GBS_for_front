@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const adminDataAccess = require("../data_access/admin.js");
 const authDataAccess = require("../auth/data_access.js");
 const CustomError = require("./custom_error.js");

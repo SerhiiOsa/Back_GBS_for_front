@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const dataAccess = require("./data_access.js");
 const createTokens = require("./create_tokens.js");
 
