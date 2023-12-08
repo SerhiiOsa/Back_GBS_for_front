@@ -9,16 +9,20 @@ const validator = {
     },
   }),
 
-  tokenValidator: validate({
-    header: {
-      Authorization: joi.string().required(),
-    },
-  }),
-
   nodeValidator: validate({
     body: {
       nodeName: joi.string().required(),
       description: joi.string().required(),
+      extendedDescription: joi.string(),
+      parentId: joi.number().integer(),
+    },
+  }),
+
+  schoolValidator: validate({
+    body: {
+      schoolName: joi.string().required(),
+      description: joi.string().required(),
+      link: joi.string().uri().required(),
     },
   }),
 };

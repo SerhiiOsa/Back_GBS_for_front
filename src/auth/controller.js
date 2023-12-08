@@ -7,10 +7,11 @@ const authController = {
     const loginData = await authService.userLogin(email, password);
 
     if (loginData) {
-      ctx.cookies.set(config.cookie.name, loginData.refreshToken, {
-        httpOnly: true,
-        maxAge: config.refreshTokenMaxAge,
-      });
+      ctx.cookies.set(
+        config.cookie.name,
+        loginData.refreshToken,
+        config.cookie.options,
+      );
 
       ctx.status = 200;
       ctx.body = {
@@ -18,8 +19,9 @@ const authController = {
         accessToken: loginData.accessToken,
       };
     } else {
-      ctx.status = 401;
-      throw new Error("Invalid login or password");
+      const error = new Error("Invalid login or password");
+      error.status = 401;
+      throw error;
     }
   },
 
@@ -39,10 +41,7 @@ const authController = {
       ctx.cookies.set(
         config.cookie.name,
         refreshAccessTokenData.newRefreshToken,
-        {
-          httpOnly: true,
-          maxAge: config.refreshTokenMaxAge,
-        },
+        config.cookie.options,
       );
 
       ctx.status = 200;

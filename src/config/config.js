@@ -5,4 +5,9 @@ module.exports = {
     page: 1,
     pageSize: 50,
   },
+
+  corsOptions: {
+    credentials: true,
+    origin: "https://guide.intita.com",
+  },
 };

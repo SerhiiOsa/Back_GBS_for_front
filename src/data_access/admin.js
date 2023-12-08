@@ -10,7 +10,7 @@ const dataAccess = {
   },
 
   async deleteUserByEmail(email) {
-    return db("users").where("email", email).del();
+    return await db("users").where("email", email).del();
   },
 };
 

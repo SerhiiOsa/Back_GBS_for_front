@@ -7,23 +7,15 @@ const dataAccess = {
     pageSize = config.defaultPagination.pageSize,
   ) {
     const offset = (page - 1) * pageSize;
-    return db("specializations").offset(offset).limit(pageSize);
-  },
-
-  async findNodeById(nodeId) {
-    return db("specializations").where("id", nodeId).first();
+    return await db("specializations").offset(offset).limit(pageSize);
   },
 
   async findNodesByParentId(nodeId) {
-    return db("specializations").where("parent_id", nodeId);
-  },
-
-  async findnodeByName(nodename) {
-    return db("specializations").where("node_name", nodename).first();
+    return await db("specializations").where("parent_id", nodeId);
   },
 
   async findAllInBranchById(nodeId) {
-    return db
+    return await db
       .withRecursive("subtree", (qb) => {
         qb.select("*")
           .from("specializations")
@@ -42,27 +34,37 @@ const dataAccess = {
       .from("subtree");
   },
 
-  async addNode(nodeName, description, parentId) {
+  async addNode(nodeName, description, extendedDescription, parentId) {
     await db("specializations").insert({
       node_name: nodeName,
       description,
+      extended_description: extendedDescription,
       parent_id: parentId,
     });
 
-    return { node_name: nodeName, description };
+    return {
+      node_name: nodeName,
+      description,
+      extended_description: extendedDescription,
+    };
   },
 
-  async updateNode(nodeId, nodeName, description) {
+  async updateNode(nodeId, nodeName, description, extendedDescription) {
     await db("specializations").where("id", nodeId).update({
       node_name: nodeName,
       description,
+      extended_description: extendedDescription,
     });
 
-    return { node_name: nodeName, description };
+    return {
+      node_name: nodeName,
+      description,
+      extended_description: extendedDescription,
+    };
   },
 
   async deleteNode(nodeId) {
-    return db("specializations").where("id", nodeId).del();
+    return await db("specializations").where("id", nodeId).del();
   },
 };
 

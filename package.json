@@ -6,6 +6,7 @@
   "scripts": {
     "start": "nodemon server.js",
     "migrate": "knex migrate:latest",
+    "seed": "knex seed:run",
     "test": "node --test .",
     "lint": "eslint . && prettier -w .",
     "prepare": "husky install",

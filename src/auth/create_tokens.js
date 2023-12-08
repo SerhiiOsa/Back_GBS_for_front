@@ -13,7 +13,7 @@ module.exports = async (user, toRefresh) => {
   const refreshToken = uuidv4();
 
   const refreshTokenExpiresAt = new Date(
-    Date.now() + config.cookie.refreshTokenMaxAge,
+    Date.now() + config.cookie.options.maxAge,
   );
 
   if (toRefresh) {

@@ -57,38 +57,41 @@ const specializationController = {
   },
 
   async createNode(ctx) {
-    const { nodeName, description, parentId } = ctx.request.body;
+    const { nodeName, description, extendedDescription, parentId } =
+      ctx.request.body;
     const createdNode = await specializationService.createNode(
       nodeName,
       description,
+      extendedDescription,
       parentId,
     );
 
     if (createdNode) {
       ctx.status = 201;
-      ctx.body = {
-        message: "Node created successfully",
-        node: createdNode,
-      };
+      ctx.body = { node: createdNode };
+    } else {
+      ctx.status = 500;
+      ctx.body = { error: "Internal server error." };
     }
   },
 
   async updateNode(ctx) {
-    const { nodeName, description } = ctx.request.body;
+    const { nodeName, description, extendedDescription } = ctx.request.body;
     const nodeId = ctx.params.id;
 
     const updatedNode = await specializationService.updateNode(
       nodeId,
       nodeName,
       description,
+      extendedDescription,
     );
 
     if (updatedNode) {
       ctx.status = 200;
-      ctx.body = {
-        message: "Node updated successfully",
-        node: updatedNode,
-      };
+      ctx.body = { node: updatedNode };
+    } else {
+      ctx.status = 500;
+      ctx.body = { error: "Internal server error." };
     }
   },
 

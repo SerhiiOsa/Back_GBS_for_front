@@ -1,5 +1,5 @@
 const specializationDataAccess = require("../data_access/specialization.js");
-const existingItem = require("./existing_node.js");
+const existingItem = require("./existing_item.js");
 const db = require("../../db/database.js");
 
 const specializationService = {
@@ -10,7 +10,7 @@ const specializationService = {
   },
 
   async getSingleNode(nodeId) {
-    return existingItem.existingNode(nodeId);
+    return existingItem.existingItem(nodeId, "specializations");
   },
 
   async getChildNodes(parentId) {
@@ -18,24 +18,25 @@ const specializationService = {
   },
 
   async getNodeTree(nodeId) {
-    await existingItem.existingNode(nodeId);
+    await existingItem.existingItem(nodeId, "specializations");
 
     return await specializationDataAccess.findAllInBranchById(nodeId);
   },
 
-  async createNode(nodeName, description, parentId) {
+  async createNode(nodeName, description, extendedDescription, parentId) {
     let createdNode;
 
     await db.transaction(async (trx) => {
-      await existingItem.existingNodeName(nodeName, trx);
+      await existingItem.existingItemName(nodeName, "specializations", trx);
 
       if (parentId) {
-        await existingItem.existingNode(parentId, trx);
+        await existingItem.existingItem(parentId, "specializations", trx);
       }
 
       createdNode = await specializationDataAccess.addNode(
         nodeName,
         description,
+        extendedDescription,
         parentId,
         trx,
       );
@@ -44,18 +45,24 @@ const specializationService = {
     return createdNode;
   },
 
-  async updateNode(nodeId, nodeName, description) {
+  async updateNode(nodeId, nodeName, description, extendedDescription) {
     let updatedNode;
 
     await db.transaction(async (trx) => {
-      await existingItem.existingNodeName(nodeName, nodeId, trx);
+      await existingItem.existingItemName(
+        nodeName,
+        "specializations",
+        nodeId,
+        trx,
+      );
 
-      await existingItem.existingNode(nodeId, trx);
+      await existingItem.existingItem(nodeId, "specializations", trx);
 
       updatedNode = await specializationDataAccess.updateNode(
         nodeId,
         nodeName,
         description,
+        extendedDescription,
         trx,
       );
     });
@@ -67,7 +74,7 @@ const specializationService = {
     let deletedNode;
 
     await db.transaction(async (trx) => {
-      await existingItem.existingNode(nodeId, trx);
+      await existingItem.existingItem(nodeId, "specializations", trx);
 
       deletedNode = await specializationDataAccess.deleteNode(nodeId, trx);
     });
