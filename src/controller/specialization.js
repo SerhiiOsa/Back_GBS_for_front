@@ -1,18 +1,18 @@
 const specializationService = require("../service/specialization.js");
-const sendData = require("../service/send_data.js");
+const sendData = require("./utils/send_data.js");
 const config = require("../config/config.js");
 
 const specializationController = {
-  async getNodesOptionally(ctx) {
+  async getSpecializationsOptionally(ctx) {
     const view = ctx.query.view || "default";
 
     switch (view) {
       case "default":
       case "list":
-        await specializationController.getNodeList(ctx);
+        await specializationController.getSpecializationList(ctx);
         break;
       case "tree":
-        await specializationController.getNodeTree(ctx);
+        await specializationController.getSpecializationTree(ctx);
         break;
       default:
         ctx.status = 400;
@@ -21,87 +21,151 @@ const specializationController = {
     }
   },
 
-  async getNodeList(ctx) {
-    const nodeId = ctx.query.parent_id || null;
+  async getSpecializationList(ctx) {
+    const specializationId = ctx.query.parentId || null;
+    const root = ctx.query.root;
+    const keywords = ctx.query.keywords;
 
-    if (nodeId) {
-      const childNodesData = await specializationService.getChildNodes(nodeId);
+    if (specializationId) {
+      const childSpecializationsData =
+        await specializationService.getChildSpecializations(specializationId);
 
-      await sendData(childNodesData, ctx);
-    } else {
-      const page = parseInt(ctx.query.page) || config.defaultPagination.page;
-      const pageSize =
-        parseInt(ctx.query.pageSize) || config.defaultPagination.pageSize;
+      await sendData(childSpecializationsData, ctx);
+      return;
+    }
 
-      const nodeListData = await specializationService.getNodeList(
+    if (root == "true") {
+      const rootSpecializationData =
+        await specializationService.getRootSpecializations();
+
+      await sendData(rootSpecializationData, ctx);
+      return;
+    }
+
+    const page = parseInt(ctx.query.page) || config.defaultPagination.page;
+    const pageSize =
+      parseInt(ctx.query.pageSize) || config.defaultPagination.pageSize;
+
+    const specializationListData =
+      await specializationService.getSpecializationList(
         page,
         pageSize,
+        keywords,
       );
 
-      await sendData(nodeListData, ctx);
-    }
+    await sendData(specializationListData, ctx);
   },
 
-  async getSingleNode(ctx) {
-    const nodeId = ctx.params.id;
-    const nodeData = await specializationService.getSingleNode(nodeId);
+  async getSingleSpecialization(ctx) {
+    const specializationId = ctx.params.id;
+    const specializationData =
+      await specializationService.getSingleSpecialization(specializationId);
 
-    await sendData(nodeData, ctx);
+    await sendData(specializationData, ctx);
   },
 
-  async getNodeTree(ctx) {
-    const nodeId = ctx.query.parent_id;
-    const nodeTreeData = await specializationService.getNodeTree(nodeId);
+  async getSpecializationTree(ctx) {
+    const specializationId = ctx.query.parentId;
+    const specializationTreeData =
+      await specializationService.getSpecializationTree(specializationId);
 
-    await sendData(nodeTreeData, ctx);
+    await sendData(specializationTreeData, ctx);
   },
 
-  async createNode(ctx) {
-    const { nodeName, description, extendedDescription, parentId } =
+  async createSpecialization(ctx) {
+    const { specializationName, description, extendedDescription, parentId } =
       ctx.request.body;
-    const createdNode = await specializationService.createNode(
-      nodeName,
-      description,
-      extendedDescription,
-      parentId,
-    );
+    const createdSpecialization =
+      await specializationService.createSpecialization(
+        specializationName,
+        description,
+        extendedDescription,
+        parentId,
+      );
 
-    if (createdNode) {
+    if (createdSpecialization) {
       ctx.status = 201;
-      ctx.body = { node: createdNode };
+      ctx.body = { specialization: createdSpecialization };
     } else {
       ctx.status = 500;
       ctx.body = { error: "Internal server error." };
     }
   },
 
-  async updateNode(ctx) {
-    const { nodeName, description, extendedDescription } = ctx.request.body;
-    const nodeId = ctx.params.id;
+  async updateSpecialization(ctx) {
+    const { specializationName, description, extendedDescription } =
+      ctx.request.body;
+    const specializationId = ctx.params.id;
 
-    const updatedNode = await specializationService.updateNode(
-      nodeId,
-      nodeName,
-      description,
-      extendedDescription,
-    );
+    const updatedSpecialization =
+      await specializationService.updateSpecialization(
+        specializationId,
+        specializationName,
+        description,
+        extendedDescription,
+      );
 
-    if (updatedNode) {
+    if (updatedSpecialization) {
       ctx.status = 200;
-      ctx.body = { node: updatedNode };
+      ctx.body = { specialization: updatedSpecialization };
     } else {
       ctx.status = 500;
       ctx.body = { error: "Internal server error." };
     }
   },
 
-  async deleteNode(ctx) {
-    const nodeId = ctx.params.id;
-    const result = await specializationService.deleteNode(nodeId);
+  async deleteSpecialization(ctx) {
+    const specializationId = ctx.params.id;
+    const result =
+      await specializationService.deleteSpecialization(specializationId);
 
     if (result) {
       ctx.status = 200;
-      ctx.body = { message: "Node deleted successfully" };
+      ctx.body = { message: "Specialization deleted successfully" };
+    } else {
+      ctx.status = 500;
+      ctx.body = { error: "Internal server error." };
+    }
+  },
+
+  async getSpecializationSchools(ctx) {
+    const specializationId = ctx.params.id;
+    const specializationSchoolsData =
+      await specializationService.getSpecializationSchools(specializationId);
+
+    await sendData(specializationSchoolsData, ctx);
+  },
+
+  async addSchoolToSpecialization(ctx) {
+    const specializationId = ctx.params.id;
+    const schoolId = ctx.params.schoolId;
+
+    const createdLink = await specializationService.addSchoolToSpecialization(
+      specializationId,
+      schoolId,
+    );
+
+    if (createdLink) {
+      ctx.status = 201;
+      ctx.body = { newLink: createdLink };
+    } else {
+      ctx.status = 500;
+      ctx.body = { error: "Internal server error." };
+    }
+  },
+
+  async removeSchoolFromSpecialization(ctx) {
+    const specializationId = ctx.params.id;
+    const schoolId = ctx.params.schoolId;
+
+    const result = await specializationService.removeSchoolFromSpecialization(
+      specializationId,
+      schoolId,
+    );
+
+    if (result) {
+      ctx.status = 200;
+      ctx.body = { message: "Link was removed successfully" };
     } else {
       ctx.status = 500;
       ctx.body = { error: "Internal server error." };

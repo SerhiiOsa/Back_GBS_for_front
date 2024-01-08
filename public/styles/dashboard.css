@@ -1,0 +1,280 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #151515;
+}
+
+#container {
+  margin: 0 auto;
+  padding: 50px 100px;
+  height: 100vh;
+}
+
+#logout {
+  display: flex;
+  justify-content: end;
+}
+
+#logout-btn {
+  background: #151515;
+  color: #b2b1b1;
+  font-size: 16px;
+  height: 50px;
+  cursor: pointer;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+#logout-btn:hover {
+  background: #562929;
+  color: #b2b1b1;
+}
+
+#logout-btn:active {
+  background: #b2b1b1;
+  color: rgb(185, 21, 21);
+}
+
+.admin-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+h1 {
+  margin-top: 10px;
+  background: #b2b1b1;
+  text-align: center;
+  display: block;
+}
+
+ul {
+  background: #151515;
+  list-style: none;
+  width: 100%;
+}
+
+li {
+  text-align: center;
+  font-size: 20px;
+  background: #b2b1b1;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 5px;
+  position: relative;
+}
+
+li:hover {
+  background: #838383;
+}
+
+li:active {
+  background: #e7e5e5;
+}
+
+#content {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+#content-data {
+  width: 50%;
+}
+
+#content-editing {
+  background: #b2b1b1;
+  width: 40%;
+  height: 80vh;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+#categories {
+  padding: 20px;
+  padding: 0;
+  display: flex;
+  justify-content: space-around;
+}
+
+#categories li {
+  width: 160px;
+}
+
+#category-content,
+#category-content ul {
+  flex-direction: column;
+  padding: 10px 5px;
+}
+
+.content-editing-btn,
+.content-info-btn {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  font-size: 24px;
+  font-weight: bold;
+  position: absolute;
+  top: 8px;
+}
+
+li .info-btn {
+  left: 36px;
+}
+
+li .create-btn {
+  right: -36px;
+}
+
+li .update-btn {
+  right: -72px;
+}
+
+li .delete-btn {
+  right: -108px;
+}
+
+li .links-btn {
+  right: 0px;
+}
+
+.create-btn {
+  color: rgb(33, 176, 33);
+}
+
+.update-btn {
+  color: rgb(181, 181, 37);
+}
+
+.delete-btn {
+  color: rgb(185, 21, 21);
+}
+
+/*editing-form*/
+#editing-form {
+  background: #e9e9e9;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+#editing-form label {
+  font-size: 20px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+#editing-form input,
+textarea {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 16px;
+  box-sizing: border-box;
+}
+
+#editing-form textarea {
+  resize: vertical;
+}
+
+#editing-form button {
+  color: black;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 200px;
+  margin: 0 auto;
+}
+
+#editing-form .create-btn {
+  background: rgb(0, 255, 0);
+}
+
+#editing-form .update-btn {
+  background: rgb(219, 233, 14);
+}
+
+#editing-form .delete-btn {
+  background: rgb(255, 0, 0);
+}
+
+#message-window {
+  margin-top: 20px;
+  font-size: 20px;
+  text-align: center;
+}
+
+#message-window.error {
+  color: rgb(255, 0, 0);
+}
+
+#message-window.success {
+  color: rgb(33, 176, 33);
+}
+
+#content-editing h3,
+h4 {
+  padding: 10px;
+}
+
+#content-editing p {
+  padding: 10px 10px 10px 20px;
+}
+
+#content-editing ul {
+  background: none;
+}
+
+#content-editing li {
+  text-align: start;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 5px;
+  margin: 5px;
+}
+
+#content-editing .content-editing-btn {
+  width: 25px;
+  height: 25px;
+  font-size: 20px;
+  top: 2px;
+}
+
+#content-editing h3 .content-editing-btn {
+  position: relative;
+  margin-left: 20px;
+}
+
+#content-editing li .delete-btn {
+  right: 0px;
+}
+
+#content-editing .drop-down-list {
+  background: #5b5555;
+  height: 100%;
+  overflow: auto;
+}
+
+#content-editing .drop-down-list li {
+  background: #5b5555;
+  padding: 5px;
+  margin: 0;
+  border-radius: 0;
+}
+
+#content-editing .drop-down-list li:hover {
+  font-weight: bold;
+  border: 1px solid #b2b1b1;
+}
+
+#content-editing .drop-down-list li:active {
+  color: #b2b1b1;
+  font-weight: bold;
+  border: none;
+}

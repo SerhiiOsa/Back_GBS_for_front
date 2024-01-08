@@ -1,0 +1,54 @@
+#modal-window {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+#modal-window .content {
+  width: 600px;
+  background-color: #f4d6d6;
+  padding: 20px;
+  border: 1px solid #888;
+  border-radius: 5px;
+  position: relative;
+}
+
+#modal-window .message {
+  font-size: 20px;
+  padding: 20px;
+  text-align: center;
+}
+
+#modal-window .close {
+  color: #aaa;
+  font-size: 36px;
+  font-weight: bold;
+  position: absolute;
+  top: 0;
+  right: 10px;
+  cursor: pointer;
+}
+
+#modal-window .close:hover {
+  color: black;
+}
+
+#modal-window .close:active {
+  color: white;
+}
+
+#modal-window .buttons {
+  display: flex;
+  justify-content: space-around;
+}
+
+#modal-window .buttons button {
+  font-size: 20px;
+  padding: 10px;
+}

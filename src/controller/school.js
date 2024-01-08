@@ -1,5 +1,5 @@
 const schoolService = require("../service/school.js");
-const sendData = require("../service/send_data.js");
+const sendData = require("./utils/send_data.js");
 const config = require("../config/config.js");
 
 const schoolController = {
@@ -64,6 +64,49 @@ const schoolController = {
     if (result) {
       ctx.status = 200;
       ctx.body = { message: "School deleted successfully" };
+    } else {
+      ctx.status = 500;
+      ctx.body = { error: "Internal server error." };
+    }
+  },
+
+  async getSchoolSpecializations(ctx) {
+    const schoolId = ctx.params.id;
+    const schoolSpecializationsData =
+      await schoolService.getSchoolSpecializations(schoolId);
+
+    await sendData(schoolSpecializationsData, ctx);
+  },
+
+  async addSpecializationToSchool(ctx) {
+    const schoolId = ctx.params.id;
+    const specializationId = ctx.params.specializationId;
+
+    const createdLink = await schoolService.addSpecializationToSchool(
+      schoolId,
+      specializationId,
+    );
+
+    if (createdLink) {
+      ctx.status = 201;
+      ctx.body = { newLink: createdLink };
+    } else {
+      ctx.status = 500;
+      ctx.body = { error: "Internal server error." };
+    }
+  },
+
+  async removeSpecializationFromSchool(ctx) {
+    const schoolId = ctx.params.id;
+    const specializationId = ctx.params.specializationId;
+    const result = await schoolService.removeSpecializationFromSchool(
+      schoolId,
+      specializationId,
+    );
+
+    if (result) {
+      ctx.status = 200;
+      ctx.body = { message: "Link was removed successfully" };
     } else {
       ctx.status = 500;
       ctx.body = { error: "Internal server error." };

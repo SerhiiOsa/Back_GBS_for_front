@@ -9,9 +9,26 @@ const validator = {
     },
   }),
 
-  nodeValidator: validate({
+  paramsValitor: validate({
+    params: {
+      id: joi.number().integer(),
+      specializationId: joi.number().integer(),
+      schoolId: joi.number().integer(),
+    },
+
+    query: {
+      parentId: joi.number().integer(),
+      view: joi.string(),
+      root: joi.boolean(),
+      page: joi.number().integer(),
+      pageSize: joi.number().integer(),
+      keywords: joi.string().min(3),
+    },
+  }),
+
+  specializationValidator: validate({
     body: {
-      nodeName: joi.string().required(),
+      specializationName: joi.string().required(),
       description: joi.string().required(),
       extendedDescription: joi.string(),
       parentId: joi.number().integer(),

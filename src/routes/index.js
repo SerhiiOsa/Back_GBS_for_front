@@ -4,16 +4,20 @@ const adminRoutes = require("./admin.js");
 const specializationRoutes = require("./specialization.js");
 const schoolRoutes = require("./school.js");
 
-const router = new Router({
+const viewRouter = new Router();
+
+viewRouter.use("/admin", adminRoutes.routes());
+
+const apiRouter = new Router({
   prefix: "/api/v1",
 });
 
-router.use("/auth", authRoutes.routes());
+apiRouter.use("/auth", authRoutes.routes());
 
-router.use("/admin", adminRoutes.routes());
+apiRouter.use("/user", adminRoutes.routes());
 
-router.use("/specializations", specializationRoutes.routes());
+apiRouter.use("/specializations", specializationRoutes.routes());
 
-router.use("/schools", schoolRoutes.routes());
+apiRouter.use("/schools", schoolRoutes.routes());
 
-module.exports = router;
+module.exports = { viewRouter, apiRouter };

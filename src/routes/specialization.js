@@ -4,20 +4,51 @@ const specializationController = require("../controller/specialization.js");
 const authorizedUser = require("../middleware/auth_user.js");
 const validator = require("../middleware/validator.js");
 
-router.get("/:id", specializationController.getSingleNode);
+router.get(
+  "/:id",
+  validator.paramsValitor,
+  specializationController.getSingleSpecialization,
+);
 
-router.get("/", specializationController.getNodesOptionally);
+router.get(
+  "/",
+  validator.paramsValitor,
+  specializationController.getSpecializationsOptionally,
+);
+
+router.get("/:id/schools", specializationController.getSpecializationSchools);
 
 router.use(authorizedUser);
 
-router.post("/", validator.nodeValidator, specializationController.createNode);
+router.post(
+  "/",
+  validator.paramsValitor,
+  validator.specializationValidator,
+  specializationController.createSpecialization,
+);
+
+router.post(
+  "/:id/schools/:schoolId",
+  validator.paramsValitor,
+  specializationController.addSchoolToSpecialization,
+);
 
 router.put(
   "/:id",
-  validator.nodeValidator,
-  specializationController.updateNode,
+  validator.paramsValitor,
+  validator.specializationValidator,
+  specializationController.updateSpecialization,
 );
 
-router.delete("/:id", specializationController.deleteNode);
+router.delete(
+  "/:id",
+  validator.paramsValitor,
+  specializationController.deleteSpecialization,
+);
+
+router.delete(
+  "/:id/schools/:schoolId",
+  specializationController.removeSchoolFromSpecialization,
+);
 
 module.exports = router;

@@ -8,55 +8,26 @@ const authController = {
 
     if (loginData) {
       ctx.cookies.set(
-        config.cookie.name,
-        loginData.refreshToken,
-        config.cookie.options,
+        config.cookie.accessToken.name,
+        loginData.accessToken,
+        config.cookie.accessToken.options,
       );
-
+      ctx.cookies.set(
+        config.cookie.refreshToken.name,
+        loginData.refreshToken,
+        config.cookie.refreshToken.options,
+      );
       ctx.status = 200;
-      ctx.body = {
-        message: "Authorization is successful",
-        accessToken: loginData.accessToken,
-      };
+      ctx.body = { message: "Authorization is successful" };
     } else {
       const error = new Error("Invalid login or password");
-      error.status = 401;
-      throw error;
-    }
-  },
-
-  async refreshAccessToken(ctx) {
-    const refreshToken = ctx.cookies.get(config.cookie.name);
-
-    if (!refreshToken) {
-      const error = new Error("Refresh token is missing");
-      error.status = 401;
-      throw error;
-    }
-
-    const refreshAccessTokenData =
-      await authService.refreshAccessToken(refreshToken);
-
-    if (refreshAccessTokenData) {
-      ctx.cookies.set(
-        config.cookie.name,
-        refreshAccessTokenData.newRefreshToken,
-        config.cookie.options,
-      );
-
-      ctx.status = 200;
-      ctx.body = {
-        accessToken: refreshAccessTokenData.newAccessToken,
-      };
-    } else {
-      const error = new Error("Invalid or expired refresh token");
-      error.status = 401;
+      error.status = 400;
       throw error;
     }
   },
 
   async logout(ctx) {
-    const refreshToken = ctx.cookies.get(config.cookie.name);
+    const refreshToken = ctx.cookies.get(config.cookie.refreshToken.name);
 
     if (!refreshToken) {
       const error = new Error("Refresh token is missing");

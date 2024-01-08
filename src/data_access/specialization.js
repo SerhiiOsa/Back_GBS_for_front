@@ -1,25 +1,65 @@
 const db = require("../../db/database.js");
 const config = require("../config/config.js");
+const { School, Specialization } = require("./models/model.js");
 
 const dataAccess = {
-  async findAllNodes(
+  async findSpecializationById(specializationId) {
+    const data = await db("specializations")
+      .where("id", specializationId)
+      .first();
+
+    if (!data) {
+      return null;
+    }
+
+    return new Specialization(data);
+  },
+
+  async findAllSpecializations(
     page = config.defaultPagination.page,
     pageSize = config.defaultPagination.pageSize,
+    keywords,
   ) {
     const offset = (page - 1) * pageSize;
-    return await db("specializations").offset(offset).limit(pageSize);
+
+    let query = db("specializations").offset(offset).limit(pageSize);
+
+    if (keywords) {
+      query = query.where("name", "ilike", `%${keywords}%`);
+    }
+
+    const data = await query;
+
+    return data.map((item) => {
+      return new Specialization(item);
+    });
   },
 
-  async findNodesByParentId(nodeId) {
-    return await db("specializations").where("parent_id", nodeId);
+  async findSpecializationsByParentId(specializationId, trx) {
+    const data = await trx("specializations").where(
+      "parent_id",
+      specializationId,
+    );
+
+    return data.map((item) => {
+      return new Specialization(item);
+    });
   },
 
-  async findAllInBranchById(nodeId) {
-    return await db
+  async findRootSpecializations() {
+    const data = await db("specializations").where("parent_id", null);
+
+    return data.map((item) => {
+      return new Specialization(item);
+    });
+  },
+
+  async findAllInBranchById(specializationId, trx) {
+    const data = await trx
       .withRecursive("subtree", (qb) => {
         qb.select("*")
           .from("specializations")
-          .where("id", nodeId)
+          .where("id", specializationId)
           .unionAll((qb) =>
             qb
               .select("specializations.*")
@@ -32,39 +72,85 @@ const dataAccess = {
       })
       .select("*")
       .from("subtree");
+
+    return data.map((item) => {
+      return new Specialization(item);
+    });
   },
 
-  async addNode(nodeName, description, extendedDescription, parentId) {
-    await db("specializations").insert({
-      node_name: nodeName,
+  async addSpecialization(
+    specializationName,
+    description,
+    extendedDescription,
+    parentId,
+    trx,
+  ) {
+    const [specializationId] = await trx("specializations")
+      .insert({
+        name: specializationName,
+        description,
+        extended_description: extendedDescription,
+        parent_id: parentId,
+      })
+      .returning("id");
+
+    return specializationId;
+  },
+
+  async updateSpecialization(
+    specializationId,
+    specializationName,
+    description,
+    extendedDescription,
+    trx,
+  ) {
+    const updated_at = trx.fn.now();
+
+    await trx("specializations").where("id", specializationId).update({
+      name: specializationName,
       description,
       extended_description: extendedDescription,
-      parent_id: parentId,
+      updated_at,
     });
 
-    return {
-      node_name: nodeName,
-      description,
-      extended_description: extendedDescription,
-    };
+    return specializationId;
   },
 
-  async updateNode(nodeId, nodeName, description, extendedDescription) {
-    await db("specializations").where("id", nodeId).update({
-      node_name: nodeName,
-      description,
-      extended_description: extendedDescription,
+  async deleteSpecialization(specializationId, trx) {
+    await trx("specializations").where("id", specializationId).del();
+
+    return specializationId;
+  },
+
+  async getSchoolsBySpecializationId(specializationId) {
+    const data = await db("school_specializations")
+      .where("specialization_id", specializationId)
+      .join("schools", "school_id", "=", "schools.id")
+      .select("schools.*");
+
+    return data.map((item) => {
+      return new School(item);
+    });
+  },
+
+  async addSchoolToSpecialization(specializationId, schoolId, trx) {
+    await trx("school_specializations").insert({
+      specialization_id: specializationId,
+      school_id: schoolId,
     });
 
-    return {
-      node_name: nodeName,
-      description,
-      extended_description: extendedDescription,
-    };
+    return { specializationId, schoolId };
   },
 
-  async deleteNode(nodeId) {
-    return await db("specializations").where("id", nodeId).del();
+  async removeSchoolFromSpecialization(specializationId, schoolId, trx) {
+    await trx("school_specializations")
+      .where({
+        specialization_id: specializationId,
+        school_id: schoolId,
+      })
+      .del();
+
+    return { specializationId, schoolId };
   },
 };
 

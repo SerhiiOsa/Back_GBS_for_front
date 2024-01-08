@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link rel="stylesheet" href="../../public/styles/login.css">
+  <style>
+    <%- include('../../public/styles/login.css'); %>
+    <%- include('../../public/styles/modal_window.css'); %>
+  </style>
+</head>
+<body>
+  <div id="container">
+    <div class="authorization-form">
+      <h1>Sign in</h1>
+      <form id="loginForm">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+  
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+  
+        <button type="submit">Sign in</button>
+      </form>
+    </div>
+  </div>
+  <%- include('../../public/portions/modal_window.ejs'); %>
+  <script>
+    <%- include('../../public/scripts/modal_window.js'); %>
+    <%- include('../../public/scripts/login.js'); %>
+  </script>
+  
+</body>
+</html>

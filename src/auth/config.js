@@ -4,12 +4,23 @@ module.exports = {
     accessTokenExpiresIn: "10m",
   },
   cookie: {
-    name: "refreshToken",
-    options: {
-      httpOnly: true,
-      sameSite: "None",
-      secure: false,
-      maxAge: 3600000, //60 minutes
+    accessToken: {
+      name: "accessToken",
+      options: {
+        httpOnly: true,
+        sameSite: "None",
+        secure: process.env.COOKIES_SECURE === "false" ? false : true,
+        maxAge: 600000, //10 minutes
+      },
+    },
+    refreshToken: {
+      name: "refreshToken",
+      options: {
+        httpOnly: true,
+        sameSite: "None",
+        secure: process.env.COOKIES_SECURE === "false" ? false : true,
+        maxAge: 3600000, //60 minutes
+      },
     },
   },
 };
