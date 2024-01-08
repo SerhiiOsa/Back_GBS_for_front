@@ -9,7 +9,7 @@ const validator = {
     },
   }),
 
-  paramsValitor: validate({
+  paramsValidator: validate({
     params: {
       id: joi.number().integer(),
       specializationId: joi.number().integer(),
@@ -40,6 +40,15 @@ const validator = {
       schoolName: joi.string().required(),
       description: joi.string().required(),
       link: joi.string().uri().required(),
+    },
+  }),
+
+  vacancyValidator: validate({
+    query: {
+      specialization: joi.string(),
+      location: joi.string(),
+      page: joi.number().integer(),
+      pageSize: joi.number().integer(),
     },
   }),
 };

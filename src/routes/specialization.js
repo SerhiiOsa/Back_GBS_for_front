@@ -6,13 +6,13 @@ const validator = require("../middleware/validator.js");
 
 router.get(
   "/:id",
-  validator.paramsValitor,
+  validator.paramsValidator,
   specializationController.getSingleSpecialization,
 );
 
 router.get(
   "/",
-  validator.paramsValitor,
+  validator.paramsValidator,
   specializationController.getSpecializationsOptionally,
 );
 
@@ -22,27 +22,27 @@ router.use(authorizedUser);
 
 router.post(
   "/",
-  validator.paramsValitor,
+  validator.paramsValidator,
   validator.specializationValidator,
   specializationController.createSpecialization,
 );
 
 router.post(
   "/:id/schools/:schoolId",
-  validator.paramsValitor,
+  validator.paramsValidator,
   specializationController.addSchoolToSpecialization,
 );
 
 router.put(
   "/:id",
-  validator.paramsValitor,
+  validator.paramsValidator,
   validator.specializationValidator,
   specializationController.updateSpecialization,
 );
 
 router.delete(
   "/:id",
-  validator.paramsValitor,
+  validator.paramsValidator,
   specializationController.deleteSpecialization,
 );
 

@@ -3,6 +3,7 @@ const authRoutes = require("../auth/routes.js");
 const adminRoutes = require("./admin.js");
 const specializationRoutes = require("./specialization.js");
 const schoolRoutes = require("./school.js");
+const vacancyRoutes = require("./vacancy.js");
 
 const viewRouter = new Router();
 
@@ -19,5 +20,7 @@ apiRouter.use("/user", adminRoutes.routes());
 apiRouter.use("/specializations", specializationRoutes.routes());
 
 apiRouter.use("/schools", schoolRoutes.routes());
+
+apiRouter.use("/vacancies", vacancyRoutes.routes());
 
 module.exports = { viewRouter, apiRouter };
