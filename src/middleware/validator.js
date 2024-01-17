@@ -51,6 +51,13 @@ const validator = {
       pageSize: joi.number().integer(),
     },
   }),
+
+  videoValidator: validate({
+    body: {
+      videoName: joi.string().required(),
+      link: joi.string().uri().required(),
+    },
+  }),
 };
 
 module.exports = validator;

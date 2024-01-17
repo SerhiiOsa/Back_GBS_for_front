@@ -11,7 +11,8 @@
 }
 
 #modal-window .content {
-  width: 600px;
+  width: 100%;
+  max-width: 600px;
   background-color: #f4d6d6;
   padding: 20px;
   border: 1px solid #888;

@@ -13,6 +13,7 @@ services:
       NODE_ENV: ${NODE_ENV}
       PORT: 3001
       JWT_SECRET: ${JWT_SECRET}
+      JOOBLE_API_KEY: ${JOOBLE_API_KEY}
     ports:
       - "${PORT}:3001"
     command: node server.js

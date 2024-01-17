@@ -4,6 +4,7 @@ const adminRoutes = require("./admin.js");
 const specializationRoutes = require("./specialization.js");
 const schoolRoutes = require("./school.js");
 const vacancyRoutes = require("./vacancy.js");
+const videoRoutes = require("./video.js");
 
 const viewRouter = new Router();
 
@@ -22,5 +23,7 @@ apiRouter.use("/specializations", specializationRoutes.routes());
 apiRouter.use("/schools", schoolRoutes.routes());
 
 apiRouter.use("/vacancies", vacancyRoutes.routes());
+
+apiRouter.use("/videos", videoRoutes.routes());
 
 module.exports = { viewRouter, apiRouter };

@@ -12,7 +12,7 @@ body {
 #container {
   background-color: #3e3c3c;
   margin: 0 auto;
-  padding: 50px 100px;
+  padding: 0;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -21,6 +21,8 @@ body {
 
 .authorization-form {
   background-color: #d0d6d1;
+  width: 100%;
+  max-width: 600px;
   padding: 40px 50px;
   display: flex;
   flex-direction: column;
@@ -35,7 +37,6 @@ h1 {
 
 form {
   margin-top: 40px;
-  width: 500px;
 }
 
 label {
