@@ -3,6 +3,7 @@ const router = new Router();
 const schoolController = require("../controller/school.js");
 const authorizedUser = require("../middleware/auth_user.js");
 const validator = require("../middleware/validator.js");
+const multipartConfig = require("./utils/body_parser_config.js");
 
 router.get("/:id", validator.paramsValidator, schoolController.getSingleSchool);
 
@@ -15,8 +16,12 @@ router.get(
 );
 
 router.use(authorizedUser);
-
-router.post("/", validator.schoolValidator, schoolController.createSchool);
+router.post(
+  "/",
+  multipartConfig,
+  validator.schoolValidator,
+  schoolController.createSchool,
+);
 
 router.post(
   "/:id/specializations/:specializationId",
@@ -26,6 +31,7 @@ router.post(
 
 router.put(
   "/:id",
+  multipartConfig,
   validator.paramsValidator,
   validator.schoolValidator,
   schoolController.updateSchool,

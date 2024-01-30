@@ -1,6 +1,6 @@
 const db = require("../../db/database.js");
 const config = require("../config/config.js");
-const { Video } = require("./models/model.js");
+const { Video, Specialization } = require("./models/model.js");
 
 const dataAccess = {
   async findVideoById(videoId) {
@@ -47,6 +47,37 @@ const dataAccess = {
     await trx("videos").where("id", videoId).del();
 
     return videoId;
+  },
+
+  async getSpecializationsByVideoId(videoId) {
+    const data = await db("video_specializations")
+      .where("video_id", videoId)
+      .join("specializations", "specialization_id", "=", "specializations.id")
+      .select("specializations.*");
+
+    return data.map((item) => {
+      return new Specialization(item);
+    });
+  },
+
+  async addSpecializationToVideo(videoId, specializationId, trx) {
+    await trx("video_specializations").insert({
+      video_id: videoId,
+      specialization_id: specializationId,
+    });
+
+    return { videoId, specializationId };
+  },
+
+  async removeSpecializationFromVideo(videoId, specializationId, trx) {
+    await trx("video_specializations")
+      .where({
+        video_id: videoId,
+        specialization_id: specializationId,
+      })
+      .del();
+
+    return { videoId, specializationId };
   },
 };
 

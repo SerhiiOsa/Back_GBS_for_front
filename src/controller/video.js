@@ -64,6 +64,49 @@ const videoController = {
       ctx.body = { error: "Internal server error." };
     }
   },
+
+  async getVideoSpecializations(ctx) {
+    const videoId = ctx.params.id;
+    const videoSpecializationsData =
+      await videoService.getVideoSpecializations(videoId);
+
+    await sendData(videoSpecializationsData, ctx);
+  },
+
+  async addSpecializationToVideo(ctx) {
+    const videoId = ctx.params.id;
+    const specializationId = ctx.params.specializationId;
+
+    const createdLink = await videoService.addSpecializationToVideo(
+      videoId,
+      specializationId,
+    );
+
+    if (createdLink) {
+      ctx.status = 201;
+      ctx.body = { newLink: createdLink };
+    } else {
+      ctx.status = 500;
+      ctx.body = { error: "Internal server error." };
+    }
+  },
+
+  async removeSpecializationFromVideo(ctx) {
+    const videoId = ctx.params.id;
+    const specializationId = ctx.params.specializationId;
+    const result = await videoService.removeSpecializationFromVideo(
+      videoId,
+      specializationId,
+    );
+
+    if (result) {
+      ctx.status = 200;
+      ctx.body = { message: "Link was removed successfully" };
+    } else {
+      ctx.status = 500;
+      ctx.body = { error: "Internal server error." };
+    }
+  },
 };
 
 module.exports = videoController;

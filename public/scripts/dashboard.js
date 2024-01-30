@@ -20,6 +20,14 @@ document.addEventListener("DOMContentLoaded", async function () {
         category: "specializations",
       },
     },
+    {
+      name: "videos",
+      form: `<%- include('../../public/portions/videos_form.ejs'); %>`,
+      children: false,
+      links: {
+        category: "specializations",
+      },
+    },
   ];
 
   const searchOptions = {
@@ -27,6 +35,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     category: {
       specializations: "specializations/",
       schools: "schools/",
+      videos: "videos/",
       logout: "auth/logout",
     },
     params: {
@@ -74,25 +83,28 @@ document.addEventListener("DOMContentLoaded", async function () {
     },
 
     async createNewItem(category, editingForm) {
-      const formData = new FormData(editingForm);
-      try {
-        const jsonData = {};
-        formData.forEach((value, key) => {
-          if (value) {
-            jsonData[key] = value;
+      const formData = new FormData();
+
+      for (const element of editingForm.elements) {
+        if (element.name) {
+          if (element.type === "file") {
+            const files = element.files;
+            if (files.length > 0) {
+              formData.append(element.name, files[0]);
+            }
+          } else if (element.value.trim() !== "") {
+            formData.append(element.name, element.value);
           }
-        });
+        }
+      }
+      try {
         const response = await fetch(
           searchOptions.apiUrl + searchOptions.category[category.name],
           {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(jsonData),
+            body: formData,
           },
         );
-
         if (!response.ok) {
           const data = await response.json();
           const error = new Error(`${data.error}`);
@@ -136,22 +148,26 @@ document.addEventListener("DOMContentLoaded", async function () {
     },
 
     async updateItem(category, editingForm, itemId) {
-      const formData = new FormData(editingForm);
-      try {
-        const jsonData = {};
-        formData.forEach((value, key) => {
-          if (value) {
-            jsonData[key] = value;
+      const formData = new FormData();
+
+      for (const element of editingForm.elements) {
+        if (element.name) {
+          if (element.type === "file") {
+            const files = element.files;
+            if (files.length > 0) {
+              formData.append(element.name, files[0]);
+            }
+          } else if (element.value.trim() !== "") {
+            formData.append(element.name, element.value);
           }
-        });
+        }
+      }
+      try {
         const response = await fetch(
           searchOptions.apiUrl + searchOptions.category[category.name] + itemId,
           {
             method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(jsonData),
+            body: formData,
           },
         );
 
@@ -251,19 +267,23 @@ document.addEventListener("DOMContentLoaded", async function () {
     info: {
       text: "i",
       class: "info-btn",
+      title: "info",
     },
     links: {
       info: {
         text: "l",
         class: "links-btn",
+        title: "links",
       },
       "create-btn": {
         text: "+",
         class: "create-btn",
+        title: "create",
       },
       "delete-btn": {
         text: "x",
         class: "delete-btn",
+        title: "delete",
         action: fetchData.deleteLink,
       },
     },
@@ -271,14 +291,17 @@ document.addEventListener("DOMContentLoaded", async function () {
       "create-btn": {
         text: "+",
         class: "create-btn",
+        title: "create",
       },
       "update-btn": {
         text: "e",
         class: "update-btn",
+        title: "edit",
       },
       "delete-btn": {
         text: "x",
         class: "delete-btn",
+        title: "delete",
       },
     },
     submit: {
@@ -312,6 +335,10 @@ document.addEventListener("DOMContentLoaded", async function () {
       description: {},
       link: {},
     },
+    videos: {
+      name: { htmlName: "videoName" },
+      link: {},
+    },
   };
 
   //Classes
@@ -339,12 +366,16 @@ document.addEventListener("DOMContentLoaded", async function () {
       new LinksBtn(this.category, this.itemElement, this.data);
     }
 
-    async createLinksDeleteBtn(loadContentWindow) {
+    async createLinksDeleteBtn(
+      loadContentWindow,
+      contentWindowLoadedFromCategory,
+    ) {
       new LinksDeleteBtn(
         this.category,
         this.itemElement,
         this.data,
         loadContentWindow,
+        contentWindowLoadedFromCategory,
       );
     }
 
@@ -364,6 +395,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       if (this.category.children) {
         this.itemElement.addEventListener("click", async (event) => {
           event.stopPropagation();
+          clearContentEditingWindow();
           if (this.fetchedChildren) {
             if (this.childrenShown) {
               this.hideChildren();
@@ -424,6 +456,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       const btnSettings = buttonSettings.editing[this.type];
       this.btnElement.innerHTML = btnSettings.text;
       this.btnElement.classList.add("content-editing-btn", btnSettings.class);
+      this.btnElement.setAttribute("title", `${btnSettings.title}`);
     }
 
     handleClick(event) {
@@ -451,6 +484,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       const btnSettings = buttonSettings.info;
       this.btnElement.innerHTML = btnSettings.text;
       this.btnElement.classList.add("content-info-btn", btnSettings.class);
+      this.btnElement.setAttribute("title", `${btnSettings.title}`);
     }
 
     handleClick(event) {
@@ -467,6 +501,10 @@ document.addEventListener("DOMContentLoaded", async function () {
           keyValueElement.innerHTML = new Date(
             this.containerData[key],
           ).toLocaleString();
+        } else if (key === "image") {
+          keyValueElement.innerHTML = this.containerData[key]
+            ? `<a href='${this.containerData[key]}' target='_blank'><img src='${this.containerData[key]}' alt='img'></a>`
+            : "-";
         } else {
           keyValueElement.innerHTML = this.containerData[key] || "-";
         }
@@ -494,9 +532,11 @@ document.addEventListener("DOMContentLoaded", async function () {
       const btnSettings = buttonSettings.links.info;
       this.btnElement.innerHTML = btnSettings.text;
       this.btnElement.classList.add("content-editing-btn", btnSettings.class);
+      this.btnElement.setAttribute("title", `${btnSettings.title}`);
     }
 
     loadContentWindow = async (linksCategory, category, containerDataId) => {
+      const contentWindowLoadedFromCategory = this.category;
       const contentWindow = document.getElementById("content-editing");
       contentWindow.innerHTML = "";
       const linkTitle = document.createElement("h3");
@@ -518,7 +558,10 @@ document.addEventListener("DOMContentLoaded", async function () {
           linksCategory,
           linkItemsContainer,
         );
-        linkItem.createLinksDeleteBtn(this.loadContentWindow);
+        linkItem.createLinksDeleteBtn(
+          this.loadContentWindow,
+          contentWindowLoadedFromCategory,
+        );
       });
       contentWindow.appendChild(linkItemsContainer);
     };
@@ -543,14 +586,18 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
   class LinksDeleteBtn {
-    constructor(category, container, containerData, loadContentWindow) {
+    constructor(
+      category,
+      container,
+      containerData,
+      loadContentWindow,
+      contentWindowLoadedFromCategory,
+    ) {
       this.type = "delete-btn";
       this.category = categoriesData.find((element) => {
         return element.name === category;
       });
-      this.fetchedElementCategory = categoriesData.find((element) => {
-        return element.name === this.category.links.category;
-      });
+      this.fetchedElementCategory = contentWindowLoadedFromCategory;
       this.container = container;
       this.containerData = containerData;
       this.loadContentWindow = loadContentWindow;
@@ -575,7 +622,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       event.stopPropagation();
 
       const responseData = await btnAction(
-        this.category.links.category,
+        this.fetchedElementCategory.name,
         this.containerData.fetchedElementId,
         this.category.name,
         this.containerData.id,
@@ -824,6 +871,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       new EditingBtn("create-btn", category, categoryElement);
 
       categoryElement.addEventListener("click", async () => {
+        clearContentEditingWindow();
         await loadCategoryContent(category);
       });
       categoriesList.appendChild(categoryElement);
@@ -851,6 +899,11 @@ document.addEventListener("DOMContentLoaded", async function () {
       rootItem.createEditingBtn("delete-btn");
       rootItem.createInfoBtn();
     });
+  }
+
+  function clearContentEditingWindow() {
+    const contentEditingWindow = document.getElementById("content-editing");
+    contentEditingWindow.innerHTML = "";
   }
 
   //Function to leave the page

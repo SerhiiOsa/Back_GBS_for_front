@@ -75,12 +75,16 @@ const specializationController = {
   async createSpecialization(ctx) {
     const { specializationName, description, extendedDescription, parentId } =
       ctx.request.body;
+
+    const image = ctx.files.image;
+
     const createdSpecialization =
       await specializationService.createSpecialization(
         specializationName,
         description,
         extendedDescription,
         parentId,
+        image,
       );
 
     if (createdSpecialization) {
@@ -97,12 +101,15 @@ const specializationController = {
       ctx.request.body;
     const specializationId = ctx.params.id;
 
+    const image = ctx.files.image;
+
     const updatedSpecialization =
       await specializationService.updateSpecialization(
         specializationId,
         specializationName,
         description,
         extendedDescription,
+        image,
       );
 
     if (updatedSpecialization) {
@@ -161,6 +168,50 @@ const specializationController = {
     const result = await specializationService.removeSchoolFromSpecialization(
       specializationId,
       schoolId,
+    );
+
+    if (result) {
+      ctx.status = 200;
+      ctx.body = { message: "Link was removed successfully" };
+    } else {
+      ctx.status = 500;
+      ctx.body = { error: "Internal server error." };
+    }
+  },
+
+  async getSpecializationVideos(ctx) {
+    const specializationId = ctx.params.id;
+    const specializationVideosData =
+      await specializationService.getSpecializationVideos(specializationId);
+
+    await sendData(specializationVideosData, ctx);
+  },
+
+  async addVideoToSpecialization(ctx) {
+    const specializationId = ctx.params.id;
+    const videoId = ctx.params.videoId;
+
+    const createdLink = await specializationService.addVideoToSpecialization(
+      specializationId,
+      videoId,
+    );
+
+    if (createdLink) {
+      ctx.status = 201;
+      ctx.body = { newLink: createdLink };
+    } else {
+      ctx.status = 500;
+      ctx.body = { error: "Internal server error." };
+    }
+  },
+
+  async removeVideoFromSpecialization(ctx) {
+    const specializationId = ctx.params.id;
+    const videoId = ctx.params.videoId;
+
+    const result = await specializationService.removeVideoFromSpecialization(
+      specializationId,
+      videoId,
     );
 
     if (result) {

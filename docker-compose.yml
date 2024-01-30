@@ -14,12 +14,16 @@ services:
       PORT: 3001
       JWT_SECRET: ${JWT_SECRET}
       JOOBLE_API_KEY: ${JOOBLE_API_KEY}
+      API_URL: ${API_URL}
+    env_file:
+      - .env
     ports:
       - "${PORT}:3001"
     command: node server.js
     volumes:
       - .:/app/
       - /app/node_modules
+      - /app/public/img/specializations
 
   postgres:
     image: postgres:16-alpine

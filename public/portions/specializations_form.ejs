@@ -1,4 +1,4 @@
-<form id="editing-form">
+<form id="editing-form" enctype="multipart/form-data">
   <label for="specializationName">Specialization name</label>
   <input type="text" id="specializationName" name="specializationName" required>
 
@@ -7,6 +7,9 @@
 
   <label for="extendedDescription">Extended description</label>
   <textarea id="extendedDescription" name="extendedDescription" rows="12"></textarea>
+
+  <label for="image">Upload Image</label>
+  <input type="file" id="image" name="image">
 
   <input type="text" id="parentId" name="parentId" hidden>
 

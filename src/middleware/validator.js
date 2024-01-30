@@ -14,6 +14,7 @@ const validator = {
       id: joi.number().integer(),
       specializationId: joi.number().integer(),
       schoolId: joi.number().integer(),
+      videoId: joi.number().integer(),
     },
 
     query: {

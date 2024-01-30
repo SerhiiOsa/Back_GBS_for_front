@@ -1,6 +1,6 @@
 const db = require("../../db/database.js");
 const config = require("../config/config.js");
-const { School, Specialization } = require("./models/model.js");
+const { School, Specialization, Video } = require("./models/model.js");
 
 const dataAccess = {
   async findSpecializationById(specializationId) {
@@ -83,6 +83,7 @@ const dataAccess = {
     description,
     extendedDescription,
     parentId,
+    image,
     trx,
   ) {
     const [specializationId] = await trx("specializations")
@@ -91,6 +92,7 @@ const dataAccess = {
         description,
         extended_description: extendedDescription,
         parent_id: parentId,
+        image,
       })
       .returning("id");
 
@@ -102,6 +104,7 @@ const dataAccess = {
     specializationName,
     description,
     extendedDescription,
+    image,
     trx,
   ) {
     const updated_at = trx.fn.now();
@@ -111,6 +114,7 @@ const dataAccess = {
       description,
       extended_description: extendedDescription,
       updated_at,
+      image,
     });
 
     return specializationId;
@@ -151,6 +155,37 @@ const dataAccess = {
       .del();
 
     return { specializationId, schoolId };
+  },
+
+  async getVideosBySpecializationId(specializationId) {
+    const data = await db("video_specializations")
+      .where("specialization_id", specializationId)
+      .join("videos", "video_id", "=", "videos.id")
+      .select("videos.*");
+
+    return data.map((item) => {
+      return new Video(item);
+    });
+  },
+
+  async addVideoToSpecialization(specializationId, videoId, trx) {
+    await trx("video_specializations").insert({
+      specialization_id: specializationId,
+      video_id: videoId,
+    });
+
+    return { specializationId, videoId };
+  },
+
+  async removeVideoFromSpecialization(specializationId, videoId, trx) {
+    await trx("video_specializations")
+      .where({
+        specialization_id: specializationId,
+        video_id: videoId,
+      })
+      .del();
+
+    return { specializationId, videoId };
   },
 };
 

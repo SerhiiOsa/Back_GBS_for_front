@@ -1,12 +1,14 @@
 FROM node:20-alpine
 
-WORKDIR / app
+WORKDIR /app
 
 COPY package*.json ./
 
 RUN npm ci --only=production --ignore-scripts
 
 COPY . .
+
+RUN chown -R node:node /app/public/img/specializations && chmod -R 755 /app/public/img/specializations
 
 EXPOSE 3001
 

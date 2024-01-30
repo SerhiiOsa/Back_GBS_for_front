@@ -1,6 +1,10 @@
 const authorizedUser = require("../middleware/auth_user.js");
 
 const adminController = {
+  async startPage(ctx) {
+    await ctx.redirect("/admin/login");
+  },
+
   async login(ctx) {
     await ctx.render("login.ejs");
   },

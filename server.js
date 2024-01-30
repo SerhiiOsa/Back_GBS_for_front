@@ -13,11 +13,11 @@ const runServer = require("./src/service/server.js");
 const app = new Koa();
 
 app.use(render(path.join(cwd(), "views/pages")));
-
+app.use(require("koa-static")("public"));
 app.use(errorHandler);
 app.proxy = true;
 app.use(cors(config.corsOptions));
-app.use(koaBody({ multipart: true, urlencoded: true, json: true }));
+app.use(koaBody());
 app.use(router.viewRouter.routes());
 app.use(router.apiRouter.routes());
 app.use(router.apiRouter.allowedMethods());
