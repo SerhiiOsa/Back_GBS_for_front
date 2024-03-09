@@ -47,6 +47,11 @@ router.get("/:id/schools", specializationController.getSpecializationSchools);
 
 router.get("/:id/videos", specializationController.getSpecializationVideos);
 
+router.get(
+  "/:id/career",
+  specializationController.getSpecializationCareerLevels,
+);
+
 router.use(authorizedUser);
 
 router.post(
@@ -69,12 +74,17 @@ router.post(
   specializationController.addVideoToSpecialization,
 );
 
+router.post(
+  "/:id/career/:careerLevelId",
+  validator.paramsValidator,
+  specializationController.addCareerLevelToSpecialization,
+);
+
 router.put(
   "/:id",
-  upload.fields([{ name: "image" }]),
   validator.paramsValidator,
   validator.specializationValidator,
-
+  upload.fields([{ name: "image" }]),
   specializationController.updateSpecialization,
 );
 
@@ -92,6 +102,11 @@ router.delete(
 router.delete(
   "/:id/videos/:videoId",
   specializationController.removeVideoFromSpecialization,
+);
+
+router.delete(
+  "/:id/career/:careerLevelId",
+  specializationController.removeCareerLevelFromSpecialization,
 );
 
 module.exports = router;

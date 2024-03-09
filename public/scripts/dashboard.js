@@ -1,5 +1,6 @@
 /* global ModalWindow */
 /* global ConfirmModalWindow */
+/* global CKEDITOR */
 
 document.addEventListener("DOMContentLoaded", async function () {
   //Options and common functions
@@ -28,6 +29,14 @@ document.addEventListener("DOMContentLoaded", async function () {
         category: "specializations",
       },
     },
+    {
+      name: "career",
+      form: `<%- include('../../public/portions/career_form.ejs'); %>`,
+      children: false,
+      links: {
+        category: "specializations",
+      },
+    },
   ];
 
   const searchOptions = {
@@ -36,6 +45,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       specializations: "specializations/",
       schools: "schools/",
       videos: "videos/",
+      career: "career/",
       logout: "auth/logout",
     },
     params: {
@@ -92,6 +102,13 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (files.length > 0) {
               formData.append(element.name, files[0]);
             }
+          } else if (element.name === "extendedDescription") {
+            const extendedDescriptionValue = CKEDITOR.instances[
+              "extendedDescription"
+            ]
+              .getData()
+              .toString();
+            formData.append("extendedDescription", extendedDescriptionValue);
           } else if (element.value.trim() !== "") {
             formData.append(element.name, element.value);
           }
@@ -157,11 +174,19 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (files.length > 0) {
               formData.append(element.name, files[0]);
             }
+          } else if (element.name === "extendedDescription") {
+            const extendedDescriptionValue = CKEDITOR.instances[
+              "extendedDescription"
+            ]
+              .getData()
+              .toString();
+            formData.append("extendedDescription", extendedDescriptionValue);
           } else if (element.value.trim() !== "") {
             formData.append(element.name, element.value);
           }
         }
       }
+
       try {
         const response = await fetch(
           searchOptions.apiUrl + searchOptions.category[category.name] + itemId,
@@ -339,6 +364,10 @@ document.addEventListener("DOMContentLoaded", async function () {
       name: { htmlName: "videoName" },
       link: {},
     },
+    career: {
+      name: { htmlName: "careerLevel" },
+      trainingTerm: {},
+    },
   };
 
   //Classes
@@ -431,7 +460,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     render() {
-      this.itemElement.innerText = this.data.name;
+      const trainingTerm = this.data.trainingTerm
+        ? "  (" + this.data.trainingTerm + " hours)"
+        : "";
+      this.itemElement.innerText = this.data.name + trainingTerm;
       this.container.appendChild(this.itemElement);
     }
   }
@@ -754,6 +786,9 @@ document.addEventListener("DOMContentLoaded", async function () {
       this.submitBtn.addEventListener("click", this.handleClick.bind(this));
       this.stylizeBtn();
       this.inputData();
+      if (this.category.name === "specializations") {
+        CKEDITOR.replace("extendedDescription");
+      }
     }
 
     stylizeBtn() {

@@ -79,6 +79,10 @@ const dataAccess = {
 
     return { videoId, specializationId };
   },
+
+  async removeAllLinks(videoId, trx) {
+    await trx("video_specializations").where("video_id", videoId).del();
+  },
 };
 
 module.exports = dataAccess;

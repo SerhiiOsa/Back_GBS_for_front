@@ -5,7 +5,7 @@ const validator = {
   loginValidator: validate({
     body: {
       email: joi.string().email().required(),
-      password: joi.string().min(4).required(),
+      password: joi.string().min(8).required(),
     },
   }),
 
@@ -15,6 +15,7 @@ const validator = {
       specializationId: joi.number().integer(),
       schoolId: joi.number().integer(),
       videoId: joi.number().integer(),
+      careerLevelId: joi.number().integer(),
     },
 
     query: {
@@ -24,6 +25,7 @@ const validator = {
       page: joi.number().integer(),
       pageSize: joi.number().integer(),
       keywords: joi.string().min(3),
+      level: joi.string(),
     },
   }),
 
@@ -57,6 +59,13 @@ const validator = {
     body: {
       videoName: joi.string().required(),
       link: joi.string().uri().required(),
+    },
+  }),
+
+  careerValidator: validate({
+    body: {
+      careerLevel: joi.string().required(),
+      trainingTerm: joi.number().integer().required(),
     },
   }),
 };

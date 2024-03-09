@@ -2,6 +2,8 @@ const schoolDataAccess = require("../data_access/school.js");
 const itemDataAccess = require("../data_access/item.js");
 const db = require("../../db/database.js");
 const assertItemExists = require("./utils/assert_item_exists.js");
+const removeImage = require("./utils/img_removing.js");
+const path = require("path");
 
 const schoolService = {
   async getSchoolList(page, pageSize) {
@@ -15,22 +17,43 @@ const schoolService = {
     return item;
   },
 
-  async createSchool(schoolName, description, link) {
-    return await schoolDataAccess.addSchool(schoolName, description, link);
+  async createSchool(schoolName, description, link, image) {
+    let schoolImage;
+    if (image) {
+      schoolImage = path.join(image[0].destination, image[0].filename);
+    }
+
+    return await schoolDataAccess.addSchool(
+      schoolName,
+      description,
+      link,
+      schoolImage,
+    );
   },
 
-  async updateSchool(schoolId, schoolName, description, link) {
+  async updateSchool(schoolId, schoolName, description, link, image) {
+    let schoolImage;
+
     const trx = await db.transaction();
 
     try {
       const item = await itemDataAccess.findItemById(schoolId, "schools", trx);
       assertItemExists(item);
 
+      if (image) {
+        schoolImage = path.join(image[0].destination, image[0].filename);
+      }
+
+      if (image && item.image) {
+        await removeImage(item.image);
+      }
+
       const updatedSchool = await schoolDataAccess.updateSchool(
         schoolId,
         schoolName,
         description,
         link,
+        schoolImage,
         trx,
       );
 
@@ -48,7 +71,13 @@ const schoolService = {
       const item = await itemDataAccess.findItemById(schoolId, "schools", trx);
       assertItemExists(item);
 
+      await schoolDataAccess.removeAllLinks(schoolId, trx);
+
       const deletedSchool = await schoolDataAccess.deleteSchool(schoolId, trx);
+
+      if (item.image) {
+        await removeImage(item.image);
+      }
 
       await trx.commit();
       return deletedSchool;

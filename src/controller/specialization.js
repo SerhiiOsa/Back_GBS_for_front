@@ -222,6 +222,46 @@ const specializationController = {
       ctx.body = { error: "Internal server error." };
     }
   },
+
+  async getSpecializationCareerLevels(ctx) {
+    const specializationId = ctx.params.id;
+    const careerLevel = ctx.query.level;
+
+    const specializationCareerLevelsData =
+      await specializationService.getSpecializationCareerLevels(
+        specializationId,
+        careerLevel,
+      );
+
+    await sendData(specializationCareerLevelsData, ctx);
+  },
+
+  async addCareerLevelToSpecialization(ctx) {
+    const specializationId = ctx.params.id;
+    const careerLevelId = ctx.params.careerLevelId;
+
+    const createdLink =
+      await specializationService.addCareerLevelToSpecialization(
+        specializationId,
+        careerLevelId,
+      );
+
+    ctx.status = 201;
+    ctx.body = { newLink: createdLink };
+  },
+
+  async removeCareerLevelFromSpecialization(ctx) {
+    const specializationId = ctx.params.id;
+    const careerLevelId = ctx.params.careerLevelId;
+
+    await specializationService.removeCareerLevelFromSpecialization(
+      specializationId,
+      careerLevelId,
+    );
+
+    ctx.status = 200;
+    ctx.body = { message: "Link was removed successfully" };
+  },
 };
 
 module.exports = specializationController;

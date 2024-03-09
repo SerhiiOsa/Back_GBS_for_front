@@ -1,6 +1,11 @@
 const db = require("../../db/database.js");
 const config = require("../config/config.js");
-const { School, Specialization, Video } = require("./models/model.js");
+const {
+  School,
+  Specialization,
+  Video,
+  CareerLevel,
+} = require("./models/model.js");
 
 const dataAccess = {
   async findSpecializationById(specializationId) {
@@ -126,8 +131,8 @@ const dataAccess = {
     return specializationId;
   },
 
-  async getSchoolsBySpecializationId(specializationId) {
-    const data = await db("school_specializations")
+  async getSchoolsBySpecializationId(specializationId, trx) {
+    const data = await trx("school_specializations")
       .where("specialization_id", specializationId)
       .join("schools", "school_id", "=", "schools.id")
       .select("schools.*");
@@ -157,8 +162,8 @@ const dataAccess = {
     return { specializationId, schoolId };
   },
 
-  async getVideosBySpecializationId(specializationId) {
-    const data = await db("video_specializations")
+  async getVideosBySpecializationId(specializationId, trx) {
+    const data = await trx("video_specializations")
       .where("specialization_id", specializationId)
       .join("videos", "video_id", "=", "videos.id")
       .select("videos.*");
@@ -186,6 +191,70 @@ const dataAccess = {
       .del();
 
     return { specializationId, videoId };
+  },
+
+  async getAllCareerLevelsBySpecializationId(specializationId, trx) {
+    const data = await trx("career_specializations")
+      .where("specialization_id", specializationId)
+      .join("career", "career_id", "=", "career.id")
+      .select("career.*");
+
+    return data.map((item) => {
+      return new CareerLevel(item);
+    });
+  },
+
+  async getCareerLevelBySpecializationId(specializationId, careerLevel, trx) {
+    const data = await trx("career_specializations")
+      .where("specialization_id", specializationId)
+      .join("career", "career_id", "=", "career.id")
+      .where("name", careerLevel)
+      .select("career.*")
+      .first();
+
+    if (!data) {
+      return null;
+    }
+
+    return new CareerLevel(data);
+  },
+
+  async addCareerLevelToSpecialization(specializationId, careerLevelId, trx) {
+    await trx("career_specializations").insert({
+      specialization_id: specializationId,
+      career_id: careerLevelId,
+    });
+
+    return { specializationId, careerLevelId };
+  },
+
+  async removeCareerLevelFromSpecialization(
+    specializationId,
+    careerLevelId,
+    trx,
+  ) {
+    await trx("career_specializations")
+      .where({
+        specialization_id: specializationId,
+        career_id: careerLevelId,
+      })
+      .del();
+
+    return { specializationId, careerLevelId };
+  },
+
+  async removeAllLinks(specializationId, trx) {
+    await trx("school_specializations")
+      .where("specialization_id", specializationId)
+      .del();
+
+    await trx("video_specializations")
+      .where("specialization_id", specializationId)
+      .del();
+
+    await trx("career_specializations")
+      .where("specialization_id", specializationId)
+      .del();
   },
 };
 

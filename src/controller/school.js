@@ -22,10 +22,14 @@ const schoolController = {
 
   async createSchool(ctx) {
     const { schoolName, description, link } = ctx.request.body;
+
+    const image = ctx.files.image;
+
     const createdSchool = await schoolService.createSchool(
       schoolName,
       description,
       link,
+      image,
     );
 
     if (createdSchool) {
@@ -41,11 +45,14 @@ const schoolController = {
     const { schoolName, description, link } = ctx.request.body;
     const schoolId = ctx.params.id;
 
+    const image = ctx.files.image;
+
     const updatedSchool = await schoolService.updateSchool(
       schoolId,
       schoolName,
       description,
       link,
+      image,
     );
 
     if (updatedSchool) {

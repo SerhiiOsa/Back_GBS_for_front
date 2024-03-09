@@ -23,13 +23,19 @@ services:
     volumes:
       - .:/app/
       - /app/node_modules
-      - /app/public/img/specializations
+      - uploads:/app/public/img
 
   postgres:
     image: postgres:16-alpine
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     expose:
       - 5432
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_DATABASE}
+
+volumes:
+  pgdata:
+  uploads:

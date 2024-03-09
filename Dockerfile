@@ -8,7 +8,7 @@ RUN npm ci --only=production --ignore-scripts
 
 COPY . .
 
-RUN chown -R node:node /app/public/img/specializations && chmod -R 755 /app/public/img/specializations
+RUN chown -R node:node /app/public/img
 
 EXPOSE 3001
 

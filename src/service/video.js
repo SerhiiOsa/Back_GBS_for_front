@@ -47,6 +47,8 @@ const videoService = {
       const item = await itemDataAccess.findItemById(videoId, "videos", trx);
       assertItemExists(item);
 
+      await videoDataAccess.removeAllLinks(videoId, trx);
+
       const deletedVideo = await videoDataAccess.deleteVideo(videoId, trx);
 
       await trx.commit();

@@ -170,6 +170,8 @@ const specializationService = {
       );
       assertItemExists(item);
 
+      await specializationDataAccess.removeAllLinks(specializationId, trx);
+
       const deletedSpecialization =
         await specializationDataAccess.deleteSpecialization(
           specializationId,
@@ -405,6 +407,119 @@ const specializationService = {
         await specializationDataAccess.removeVideoFromSpecialization(
           specializationId,
           videoId,
+          trx,
+        );
+
+      await trx.commit();
+      return deletedLink;
+    } catch (error) {
+      await trx.rollback();
+      throw error;
+    }
+  },
+
+  async getSpecializationCareerLevels(specializationId, careerLevel) {
+    const trx = await db.transaction();
+    try {
+      const item = await itemDataAccess.findItemById(
+        specializationId,
+        "specializations",
+        trx,
+      );
+      assertItemExists(item);
+
+      let careerData;
+      if (!careerLevel) {
+        careerData =
+          await specializationDataAccess.getAllCareerLevelsBySpecializationId(
+            specializationId,
+            trx,
+          );
+      } else {
+        careerData =
+          await specializationDataAccess.getCareerLevelBySpecializationId(
+            specializationId,
+            careerLevel,
+            trx,
+          );
+      }
+
+      await trx.commit();
+      return careerData;
+    } catch (error) {
+      await trx.rollback();
+      throw error;
+    }
+  },
+
+  async addCareerLevelToSpecialization(specializationId, careerLevelId) {
+    const trx = await db.transaction();
+    try {
+      const specialization = await itemDataAccess.findItemById(
+        specializationId,
+        "specializations",
+        trx,
+      );
+      assertItemExists(specialization);
+
+      const careerLevel = await itemDataAccess.findItemById(
+        careerLevelId,
+        "videos",
+        trx,
+      );
+      assertItemExists(careerLevel);
+
+      const createdLink =
+        await specializationDataAccess.addCareerLevelToSpecialization(
+          specializationId,
+          careerLevelId,
+          trx,
+        );
+
+      await trx.commit();
+      return createdLink;
+    } catch (error) {
+      await trx.rollback();
+      throw error;
+    }
+  },
+
+  async removeCareerLevelFromSpecialization(specializationId, careerLevelId) {
+    const trx = await db.transaction();
+    try {
+      const careerLevel = await itemDataAccess.findItemById(
+        careerLevelId,
+        "career",
+        trx,
+      );
+      assertItemExists(careerLevel);
+
+      const specialization = await itemDataAccess.findItemById(
+        specializationId,
+        "specializations",
+        trx,
+      );
+      assertItemExists(specialization);
+
+      const link = await itemDataAccess.findLinkRecord(
+        "career_id",
+        careerLevelId,
+        "specialization_id",
+        specializationId,
+        "career_specializations",
+        trx,
+      );
+
+      if (!link) {
+        const error = new Error("This link does not exist.");
+        error.status = 400;
+        throw error;
+      }
+
+      const deletedLink =
+        await specializationDataAccess.removeCareerLevelFromSpecialization(
+          specializationId,
+          careerLevelId,
           trx,
         );
 

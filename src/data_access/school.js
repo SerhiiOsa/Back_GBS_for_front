@@ -25,20 +25,20 @@ const dataAccess = {
     });
   },
 
-  async addSchool(schoolName, description, link) {
+  async addSchool(schoolName, description, link, image) {
     const [schoolId] = await db("schools")
-      .insert({ name: schoolName, description, link })
+      .insert({ name: schoolName, description, link, image })
       .returning("id");
 
     return schoolId;
   },
 
-  async updateSchool(schoolId, schoolName, description, link, trx) {
+  async updateSchool(schoolId, schoolName, description, link, image, trx) {
     const updated_at = trx.fn.now();
 
     await trx("schools")
       .where("id", schoolId)
-      .update({ name: schoolName, description, link, updated_at });
+      .update({ name: schoolName, description, link, updated_at, image });
 
     return schoolId;
   },
@@ -78,6 +78,10 @@ const dataAccess = {
       .del();
 
     return { schoolId, specializationId };
+  },
+
+  async removeAllLinks(schoolId, trx) {
+    await trx("school_specializations").where("school_id", schoolId).del();
   },
 };
 
